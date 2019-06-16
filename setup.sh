@@ -16,5 +16,5 @@ then
 fi
 
 . $VENV/bin/activate
-sudo chmod +x /var/lib/snips/skills/Snips-ISS-Skill/action-olzeug-getPeopleonISS-olzeug.ISS.py /var/lib/snips/skills/Snips-ISS-Skill/action-olzeug-locationofISS-olzeug.ISS.py
+chmod +x /var/lib/snips/skills/Snips-ISS-Skill/action-olzeug-getPeopleonISS-olzeug.ISS.py /var/lib/snips/skills/Snips-ISS-Skill/action-olzeug-locationofISS-olzeug.ISS.py
 pip install -r requirements.txt
