@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import configparser
 from hermes_python.hermes import Hermes
@@ -21,7 +20,7 @@ def read_configuration_file(configuration_file):
             conf_parser = SnipsConfigParser()
             conf_parser.readfp(f)
             return conf_parser.to_dict()
-    except (IOError, configparser.Error) as e:
+    except (IOError, configparser.Error):
         return dict()
 
 def subscribe_intent_callback(hermes, intentMessage):
@@ -35,15 +34,14 @@ def action_wrapper(hermes, intentMessage, conf):
     amount = data['number']
 
     if not amount:
-        answer = "Es ist gerade niemand auf der ISS"
+        answer = 'Es ist gerade niemand auf der ISS'
     elif amount == 1:
-        answer = f"Auf der ISS ist gerade eine Person, {data['people'][0]['name']}."
+        answer = 'Auf der ISS ist gerade eine Person, {}.'.format(data['people'][0]['name'])
     else:
-        people = f"{', '.join(str(x['name']) for x in data['people'][:-1])} und {data['people'][-1]['name']}"
-        answer = f"Auf der ISS sind gerade {amount} Personen, {people}"
+        people = '{} und {}'.format(', '.join(str(x['name']) for x in data['people'][:-1]), data['people'][-1]['name'])
+        answer = 'Auf der ISS sind gerade {} Personen, {}'.format(amount, people)
 
     hermes.publish_end_session(intentMessage.session_id, answer)
-    
 
 
 if __name__ == "__main__":
