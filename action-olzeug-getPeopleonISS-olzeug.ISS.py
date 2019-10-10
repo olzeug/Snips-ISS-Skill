@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import configparser
 from hermes_python.hermes import Hermes
@@ -21,7 +20,7 @@ def read_configuration_file(configuration_file):
             conf_parser = SnipsConfigParser()
             conf_parser.readfp(f)
             return conf_parser.to_dict()
-    except (IOError, configparser.Error) as e:
+    except (IOError, configparser.Error):
         return dict()
 
 def subscribe_intent_callback(hermes, intentMessage):
@@ -30,28 +29,19 @@ def subscribe_intent_callback(hermes, intentMessage):
 
 
 def action_wrapper(hermes, intentMessage, conf):
-    import urllib.request,json
-    response = json.loads(urllib.request.urlopen('http://api.open-notify.org/astros.json').read().decode())
-    if response['number'] > 1:
-        a = "sind"
-        b = str(response['number'])+' Personen'
+    import requests
+    data = requests.get('http://api.open-notify.org/astros.json').json()
+    amount = data['number']
+
+    if not amount:
+        answer = 'Es ist gerade niemand auf der ISS'
+    elif amount == 1:
+        answer = 'Auf der ISS ist gerade eine Person, {}.'.format(data['people'][0]['name'])
     else:
-        a = "ist"
-        b = 'eine Persone'
-    c = [i['name'] for i in response['people']]
-    i = 1
-    t = c[0]
-    while True:
-        try:
-            if i == len(c)-1:
-                t = t+' und '+c[i]
-            else:
-                t = t+', '+c[i]
-            i += 1
-        except:
-            break
-    hermes.publish_end_session(intentMessage.session_id,'Auf der ISS {} gerade {}, {}.'.format(a,b,t))
-    
+        people = '{} und {}'.format(', '.join(str(x['name']) for x in data['people'][:-1]), data['people'][-1]['name'])
+        answer = 'Auf der ISS sind gerade {} Personen, {}'.format(amount, people)
+
+    hermes.publish_end_session(intentMessage.session_id, answer)
 
 
 if __name__ == "__main__":
