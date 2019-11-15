@@ -43,7 +43,6 @@ def action_wrapper(hermes, intentMessage, conf):
         latitude = '{} Grad Ost'.format(response['iss_position']['latitude'][0:-5])
 
     hermes.publish_end_session(intentMessage.session_id,'Die ISS ist gerade bei {} und {}'.format(longitude, latitude))
-    
 
 if __name__ == "__main__":
     mqtt_opts = MqttOptions()
